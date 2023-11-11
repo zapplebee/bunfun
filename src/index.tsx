@@ -92,15 +92,17 @@ app.post(
       LOGGED_IN_COOKIE_NAME,
       "blueberry",
       process.env.COOKIE_SIGNING_KEY as string,
-      {
-        path: "/",
-        secure: true,
-        domain: "zapplebee.prettybirdserver.com",
-        httpOnly: true,
-        maxAge: 1000,
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
-        sameSite: "Strict",
-      }
+      process.env.NODE_ENV === "production"
+        ? {
+            path: "/",
+            secure: true,
+            domain: "zapplebee.prettybirdserver.com",
+            httpOnly: true,
+            maxAge: 1000,
+            expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+            sameSite: "Strict",
+          }
+        : undefined
     );
     return c.redirect("/app", 302);
   }
