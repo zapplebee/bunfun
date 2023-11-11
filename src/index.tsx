@@ -5,13 +5,7 @@ import { validator } from "hono/validator";
 import { Layout } from "./components/foo";
 import { memo } from "hono/jsx";
 
-import {
-  getCookie,
-  getSignedCookie,
-  setCookie,
-  setSignedCookie,
-  deleteCookie,
-} from "hono/cookie";
+import { getSignedCookie, setSignedCookie, deleteCookie } from "hono/cookie";
 
 const secret = process.env.OTP_SECRET as string;
 
@@ -34,9 +28,29 @@ app.use("/app", async (c, next) => {
   await next();
 });
 
-app.get("/app", (c) => {
-  console.log(c.req);
-  return c.html(<Layout>Welcome to the app</Layout>);
+app.all("/app/*", (c) => {
+  const requestP = new Proxy(c.req, {
+    get(target, prop) {
+      if (prop === "url") {
+        return target[prop].replace(
+          "http://localhost:3400",
+          "http://0.0.0.0:5173"
+        );
+      }
+      //@ts-ignore
+      const value = target[prop];
+      if (value instanceof Function) {
+        //@ts-ignore
+        return function (...args) {
+          //@ts-ignore
+          return value.apply(this === receiver ? target : this, args);
+        };
+      }
+      return value;
+    },
+  });
+
+  return fetch(new Request(requestP));
 });
 
 app.all("/logout", async (c) => {
