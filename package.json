@@ -1,0 +1,15 @@
+{
+  "scripts": {
+    "dev": "bun run --hot src/index.tsx",
+    "smol": "bun --smol run src/index.tsx",
+    "tw": "tailwindcss -i ./src/main.css -o ./dist/main.css --watch"
+  },
+  "dependencies": {
+    "hono": "^3.9.2",
+    "otplib": "^12.0.1"
+  },
+  "devDependencies": {
+    "bun-types": "^1.0.7",
+    "tailwindcss": "^3.3.5"
+  }
+}
